@@ -1,49 +1,57 @@
-
-<?php
-function wd_get_roles() {
-	
-	global $wp_roles;
-	
-	$roles = $wp_roles->get_names();
-	
-	return $roles;
-}
-
-		$args = array(
-			'fields'          => 'ids', 
-            'post_type'         => 'elementor_library',
-			'posts_per_page'    => '-1',
-			'post_status'		=> 'publish'
-		);
-
-		$templates = get_posts( $args );
-?>
-
 <html>
-<body>
-	<h1>Welcome Dashboard</h1>
-	<h3>Settings Page</h3>
-<?php
-	$all_roles = wd_get_roles();
-	foreach( $all_roles as $roles ){ 
-	?>
+	<body>
+		<h1>Welcome Dashboard</h1>
+		<h3>Settings Page</h3>
+	<?php
+		$all_roles = $this-> wd_get_roles();
 
-	<div>
-		<?php echo $roles; ?>
-	</div>
-<?php	
-	}
-?>
-<?php
-	foreach( $templates as $template ){ 
-	?>
+			$templates= $this->wd_get_templates();?>
 
-	<div>
-		<?php print_r($templates['fields']); ?>
-	</div>
-<?php	
-	}
-?>
+		</div>
+			<div>
+			<form method="post">
+				<table class="dwe-settings-table wp-list-table widefat">
+					<tr valign="top">
+		                <th scope="row" valign="top">
+		                    <strong><?php esc_html_e('User Roles', 'welcome-dashboard'); ?></strong>
+		                </th>
+		                <th scope="row" valign="top">
+		                    <strong><?php esc_html_e('Show Template', 'welcome-dashboard'); ?></strong>
+		                </th>
+		                <th scope="row" valign="top">
+		                    <strong><?php esc_html_e('Is Dismissible?', 'welcome-dashboard'); ?></strong>
+		                </th>
+		                <th scope="row" valign="top">
+		                    <strong><?php esc_html_e('Clear dashboard?', 'welcome-dashboard'); ?></strong>
+		                </th>
+		            </tr>
+		            <?php foreach ($all_roles as $roles) {?>
+		            <tr>
+		            	<th>
+		            	<?php echo $roles;?>
+		            	</th>
+		            
+		            
+		            	<th>
+							<select value = <?php echo $roles.[];?> >
+							<option value ="---select---"  >---select----</option>
+							<?php foreach ($templates as $template) { ?>
+							<option  name = "templateid[]" value=<?php echo $template->ID;?>> <?php echo $template->post_title;?> </option>
+						<?php }?>
+							</select>
+		            	</th>
+		            </tr>
+		        <?php } ?>
+				</table>
+				<div>
+					<?php
+		 			for ($i=0; $i<2; $i++) { 
+							echo  $this->wd_render_template();
+					}?>
+				</div>
 
-</body>
+				<input type="submit" class="button button-primary ppc-savesetting"  name="submit_radio" Value="Save Settings"/>
+			</form>
+			</div>
+	</body>
 </html>

@@ -115,7 +115,7 @@ final class WD_welcome_dashboard {
 		}
 
 		// Once we get here, We have passed all validation checks so we can safely include our plugin
-		require_once( 'classes/wd-plugin-file.php' );
+		require_once( 'classes/wd-loader.php' );
 	}
 
 	/**

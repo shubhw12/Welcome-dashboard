@@ -18,7 +18,7 @@
  * @return void
  */
 
-if ( ! class_exists( 'WD_Pagesetups' ) ) :
+if ( ! class_exists( 'WD_loader' ) ) :
 	/**
 	 * Welcome Dashboard Loader Doc 
 	 *
@@ -30,7 +30,7 @@ if ( ! class_exists( 'WD_Pagesetups' ) ) :
 	 * @license  http://brainstormforce.com
 	 * @link     http://brainstormforce.com
 	 */
-	class WD_Pagesetups {
+	class WD_loader {
 
 		/**
 		 * Member Variable
@@ -53,6 +53,11 @@ if ( ! class_exists( 'WD_Pagesetups' ) ) :
 		 */
 		public function __construct() {
 			add_action( 'admin_menu', array( $this, 'wd_settings_page' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'wd_plugin_scripts' ) );
+		}
+
+		public function ppc_plugin_backend_js() {
+			wp_register_style( 'ppc_backend_css', WD_PLUGIN_URL . '/assets/css/ppc-css.css', null, PPC_VERSION, false );
 		}
 
 		/**
@@ -62,6 +67,40 @@ if ( ! class_exists( 'WD_Pagesetups' ) ) :
 		 *
 		 * @since 1.0.0
 		 */
+
+		public function wd_render_template()
+		{
+			$elementor = Elementor\Plugin::$instance;
+			$elementor->frontend->register_styles();
+			$elementor->frontend->enqueue_styles();
+			echo $elementor->frontend->get_builder_content( 14 , true );	
+			$elementor->frontend->register_scripts();
+			$elementor->frontend->enqueue_scripts();
+			
+		}
+
+		public function wd_get_templates(){
+
+		$args = array(
+            'post_type'         => 'elementor_library',
+			'posts_per_page'    => '-1',
+			'post_status'		=> 'publish'
+		);
+
+		$templates = get_posts( $args );
+		return $templates;
+
+		}
+
+
+		public function wd_get_roles() {
+
+			global $wp_roles;
+			$roles = $wp_roles->get_names();
+			return $roles;
+		}
+
+
 		public function wd_settings_page() {
 			add_submenu_page(
 				'options-general.php',
@@ -82,5 +121,5 @@ if ( ! class_exists( 'WD_Pagesetups' ) ) :
 		public function wd_page_html() {
 			require_once WD_ABSPATH . 'includes/wd-settings-page.php';
 		}
-	}WD_Pagesetups::get_instance();
+	}WD_loader::get_instance();
 endif;
