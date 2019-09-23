@@ -1,12 +1,14 @@
+<?php
+	$all_roles = $this-> wd_get_roles();
+	$templates= $this->wd_get_templates();
+	wp_enqueue_style( 'wd_css' );
+	wp_enqueue_script('wd_js');
+ 	$wd_post = get_option('wd_settings_data');		
+?>
 <html>
 	<body>
 		<h1>Welcome Dashboard</h1>
 		<h3>Settings Page</h3>
-	<?php
-		$all_roles = $this-> wd_get_roles();
-
-			$templates= $this->wd_get_templates();?>
-
 		</div>
 			<div>
 			<form method="post">
@@ -30,27 +32,19 @@
 		            	<th>
 		            	<?php echo $roles;?>
 		            	</th>
-		            
-		            
 		            	<th>
-							<select value = <?php echo $roles.[];?> >
-							<option value ="---select---"  >---select----</option>
+							<select name= <?php echo $roles;?> >
+							<option>---select----</option>
 							<?php foreach ($templates as $template) { ?>
-							<option  name = "templateid[]" value=<?php echo $template->ID;?>> <?php echo $template->post_title;?> </option>
+							<option  name = <?php echo $roles;?> value = <?php echo $template->ID;?>>  <?php echo $template->post_title;?> </option>
 						<?php }?>
 							</select>
 		            	</th>
 		            </tr>
 		        <?php } ?>
 				</table>
-				<div>
-					<?php
-		 			for ($i=0; $i<2; $i++) { 
-							echo  $this->wd_render_template();
-					}?>
-				</div>
-
-				<input type="submit" class="button button-primary ppc-savesetting"  name="submit_radio" Value="Save Settings"/>
+ 				<input type="submit" class="button button-primary wd-savesetting"  name="submit_radio" Value="Save Settings"/>
+ 				<br>
 			</form>
 			</div>
 	</body>

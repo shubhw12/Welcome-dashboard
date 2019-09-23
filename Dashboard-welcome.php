@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Welcome Dashboard
  * Description: Display elementor templates on admin dashboard.
- * Version:     1.2=0.0
+ * Version:     1.0.0
  * Author:      BrainstormForce.
  * Author URI:  https://www.brainstormforce.com
  * Text Domain: welcome-dashboard
@@ -17,10 +17,12 @@ define( 'WD_PLUGIN_URL', untrailingslashit( plugins_url( '', __FILE__ ) ) );
 
 define( 'WD_PLUGIN_DIR', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 
+define( 'SCRIPTS_VERSION', '1.0.0' );
+
 /**
  * Main Welcome Dashboard Class
  *
- * The init class that runs the Hello World plugin.
+ * The init class that runs the this plugin.
  * Intended To make sure that the plugin's minimum requirements are met.
  *
  * You should only modify the constants to match your plugin's needs.
