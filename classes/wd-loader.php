@@ -57,6 +57,7 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			add_action( 'admin_init', array( $this, 'wd_save_setting_data' ) );
 			remove_action( 'welcome_panel', 'wp_welcome_panel' );
 			add_action( 'welcome_panel', array( $this, 'wd_welcome_panel' ) );
+			add_action('wp_dashboard_setup', array($this , 'wd_remove_all_dashboard_meta_boxes'), 9999 );
 		}
 
 		public function wd_plugin_scripts() {
@@ -122,10 +123,13 @@ if ( ! class_exists( 'WD_loader' ) ) :
 		 * @since 1.0.0
 		 */
 		public function wd_save_setting_data() {
+
+				// echo '<pre>';
+				// print_r($_POST);
+				// wp_die();
 				if ( isset( $_POST['submit_radio'] ) ) {
 					update_option('wd_settings_data',$_POST);
 				}
-
 				if ( ! current_user_can( 'edit_theme_options' ) ) {
 					add_action( 'admin_notices', array( $this, 'wd_welcome_panel' ) );
 				}
@@ -156,14 +160,34 @@ if ( ! class_exists( 'WD_loader' ) ) :
 				$elementor->frontend->enqueue_styles();
 				$elementor->frontend->register_scripts();
 				$elementor->frontend->enqueue_scripts();
-			}echo $elementor->frontend->get_builder_content_for_display( $wd_post[$wd_role] , true );
+			}echo $elementor->frontend->get_builder_content_for_display( $wd_post[$wd_role]["template-id"] , true );
 		}
 
 
 		public function wd_welcome_panel(){
-			require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
+			$ppc_screen = get_current_screen();
+			if('index' == $ppc_screen->parent_base ){
+				require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
+			}
+			else{
+				return;
+			}
 		}
 
+
+		public function wd_remove_all_dashboard_meta_boxes()
+		{
+			$wd_post = get_option('wd_settings_data');
+			$wd_current_user_role = $this->wd_get_current_user_role();
+			$wd_role = ucfirst($wd_current_user_role);
+			if( isset($wd_post[$wd_role]["clear-dasboard"])  ){
+			    global $wp_meta_boxes;
+			    $wp_meta_boxes['dashboard']['normal']['core'] = array();
+			    $wp_meta_boxes['dashboard']['side']['core'] = array();
+			}else{
+				return;
+			}
+		}
 		/**
 		 * settings page 
 		 *
