@@ -55,14 +55,24 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			add_action( 'admin_menu', array( $this, 'wd_settings_page' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'wd_plugin_scripts' ) );
 			add_action( 'admin_init', array( $this, 'wd_save_setting_data' ) );
-			remove_action( 'welcome_panel', 'wp_welcome_panel' );
-			add_action( 'welcome_panel', array( $this, 'wd_welcome_panel' ) );
+			add_action( 'admin_init', array( $this, 'wd_display_panel' ) );
 			add_action('wp_dashboard_setup', array($this , 'wd_remove_all_dashboard_meta_boxes'), 9999 );
 		}
 
 		public function wd_plugin_scripts() {
+			$wd_post = get_option('wd_settings_data');
+			$wd_current_user_role = $this->wd_get_current_user_role();
+			$wd_role = ucfirst($wd_current_user_role);
 			wp_register_style( 'wd_css', WD_PLUGIN_URL . '/assets/css/wd-css.css', null, SCRIPTS_VERSION, false );
 			wp_register_script('wd_js', WD_PLUGIN_URL. '/assets/js/wd-js.js', null , SCRIPTS_VERSION, false);
+			wp_localize_script(
+					'wd_js',
+					'template',
+					array(
+						'user_role' => $wd_role , 
+						'wd_settings' => get_option('wd_settings_data') ,
+						)
+			);
 		}
 
 		/**
@@ -123,15 +133,11 @@ if ( ! class_exists( 'WD_loader' ) ) :
 		 * @since 1.0.0
 		 */
 		public function wd_save_setting_data() {
-
-				// echo '<pre>';
-				// print_r($_POST);
-				// wp_die();
 				if ( isset( $_POST['submit_radio'] ) ) {
+					// echo "<pre>";
+					// var_dump($_POST);
+					// wp_die();
 					update_option('wd_settings_data',$_POST);
-				}
-				if ( ! current_user_can( 'edit_theme_options' ) ) {
-					add_action( 'admin_notices', array( $this, 'wd_welcome_panel' ) );
 				}
 		}
 
@@ -186,6 +192,27 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			    $wp_meta_boxes['dashboard']['side']['core'] = array();
 			}else{
 				return;
+			}
+		}
+
+		public function wd_display_panel(){
+
+			$wd_post = get_option('wd_settings_data');
+			$wd_current_user_role = $this->wd_get_current_user_role();
+			$wd_role = ucfirst($wd_current_user_role);
+			$ppc_screen = get_current_screen();
+			if( $wd_post[$wd_role]["template-id"] != "---select---"){
+				remove_action( 'welcome_panel', 'wp_welcome_panel' );
+				add_action( 'welcome_panel', array( $this, 'wd_display_panel' ) );
+				if ( ! current_user_can( 'edit_theme_options' ) ) {
+				  add_action( 'admin_notices', array( $this, 'wd_display_panel' ) );
+				}
+				if('index' == $ppc_screen->parent_base ){
+					require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
+				}
+				else{
+					return;
+				}
 			}
 		}
 		/**
