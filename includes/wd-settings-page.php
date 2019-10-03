@@ -47,10 +47,16 @@
 							</select>
 		            	</th>
 		            	<th>
-		            	<input type="checkbox" value = 1 name = <?php echo $roles;?>[dissmissable] <?php if(!empty($wd_post)) {checked(isset($wd_post[$roles]["dissmissable"]))}?>  > 
+		            	<input type="checkbox" value = 1 name = <?php echo $roles;?>[dissmissable] 
+		            	<?php if( !empty($wd_post) ) {
+		            		checked(isset($wd_post[$roles]["dissmissable"]));
+		            	}?>  > 
 		            	</th>
 		            	<th>
-		            	<input type="checkbox" value = 1 name = <?php echo $roles;?>[clear-dasboard] <?php <?php if(!empty($wd_post)) { checked(isset($wd_post[$roles]["clear-dasboard"]))}?> >
+		            	<input type="checkbox" value = 1 name = <?php echo $roles;?>[clear-dasboard]
+		            	<?php if(!empty($wd_post)) {
+		            	 checked(isset($wd_post[$roles]["clear-dasboard"]));
+		            	}?> >
 		            	</th>
 		            </tr>
 		        <?php } ?>

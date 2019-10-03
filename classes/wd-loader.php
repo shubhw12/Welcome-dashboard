@@ -17,6 +17,8 @@
  * @since  1.0.0
  * @return void
  */
+use Elementor\Core\Documents_Manager;
+use Elementor\TemplateLibrary\Source_Local;
 
 if ( ! class_exists( 'WD_loader' ) ) :
 	/**
@@ -57,6 +59,8 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			add_action( 'admin_init', array( $this, 'wd_save_setting_data' ) );
 			add_action( 'admin_init', array( $this, 'wd_display_panel' ) );
 			add_action('wp_dashboard_setup', array($this , 'wd_remove_all_dashboard_meta_boxes'), 9999 );
+			add_action( 'elementor/init', array( $this, 'wd_saved_template' ) );
+			add_action('elementor/template-library/create_new_dialog_fields', array($this,'wd_custom_feilds') );
 		}
 
 		public function wd_plugin_scripts() {
@@ -86,6 +90,7 @@ if ( ! class_exists( 'WD_loader' ) ) :
 
 		$args = array(
             'post_type'         => 'elementor_library',
+            'type' => 'Dashboard',
 			'posts_per_page'    => '-1',
 			'post_status'		=> 'publish'
 		);
@@ -126,7 +131,7 @@ if ( ! class_exists( 'WD_loader' ) ) :
 		}
 
 		/**
-		 * Function for fetching user roles
+		 * Function for saving user data from settings page
 		 *
 		 * Get user roles like administrator or editor , author etc.
 		 *
@@ -140,7 +145,13 @@ if ( ! class_exists( 'WD_loader' ) ) :
 					update_option('wd_settings_data',$_POST);
 				}
 		}
-
+		/**
+		 * Function for fetching user roles
+		 *
+		 * Get user roles like administrator or editor , author etc.
+		 *
+		 * @since 1.0.0
+		 */
 		public function wd_get_current_user_role() {
 			global $current_user;
 			$user_roles = $current_user->roles;
@@ -169,7 +180,13 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			}echo $elementor->frontend->get_builder_content_for_display( $wd_post[$wd_role]["template-id"] , true );
 		}
 
-
+		/**
+		 * Function which includes the welcome panel html
+		 *
+		 * 
+		 *
+		 * @since 1.0.0
+		 */
 		public function wd_welcome_panel(){
 			$ppc_screen = get_current_screen();
 			if('index' == $ppc_screen->parent_base ){
@@ -180,7 +197,13 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			}
 		}
 
-
+		/**
+		 * Clear dashboard widgets
+		 *
+		 * This function empty the array of widgets shown on dashboard thus clearing it.
+		 *
+		 * @since 1.0.0
+		 */
 		public function wd_remove_all_dashboard_meta_boxes()
 		{
 			$wd_post = get_option('wd_settings_data');
@@ -194,13 +217,19 @@ if ( ! class_exists( 'WD_loader' ) ) :
 				return;
 			}
 		}
-
+		/**
+		 * Function responsible for displaying the template on dashboard 
+		 *
+		 * Check current user and display particular template for him and clear dashboard according to settings saved.
+		 *
+		 * @since 1.0.0
+		 */
 		public function wd_display_panel(){
-
+			global $current_screen;
 			$wd_post = get_option('wd_settings_data');
 			$wd_current_user_role = $this->wd_get_current_user_role();
 			$wd_role = ucfirst($wd_current_user_role);
-			$ppc_screen = get_current_screen();
+			$ppc_screen = $current_screen;
 			if( $wd_post[$wd_role]["template-id"] != "---select---"){
 				remove_action( 'welcome_panel', 'wp_welcome_panel' );
 				add_action( 'welcome_panel', array( $this, 'wd_display_panel' ) );
@@ -215,6 +244,39 @@ if ( ! class_exists( 'WD_loader' ) ) :
 				}
 			}
 		}
+
+		public function wd_saved_template(){
+
+			require_once WD_ABSPATH . 'includes/wd-init.php';
+
+		}
+
+		public function wd_custom_feilds(){
+
+			$all_roles = $this-> wd_get_roles();
+			?>
+			<br>
+			<div id="elementor-new-template__form__template-type__wrapper" class="elementor-form-field">
+				<label for="elementor-new-template__form__template-type" class="elementor-form-field__label"><?php echo __( 'Select the user role you want to display this dashboard for', 'welcome-dashboard' ); ?></label>
+				<select id="elementor-new-template__form__template-type" class="elementor-form-field__select" name="wd_user_role" required>
+					<option>---select---</option>
+					<?php foreach ($all_roles as $roles) { ?>
+								<option name = <?php echo $roles;?> value = <?php echo $template->ID;?> 
+								<?php
+								if(!empty($wd_post)) {
+										selected(true , in_array($template->ID, $wd_post[$roles]) );
+									}
+								?>
+								> <?php 
+								  echo $roles;?> </option>
+							<?php }?>
+					
+				</select>
+			</div>
+			<?php
+
+		}
+
 		/**
 		 * settings page 
 		 *
@@ -226,4 +288,6 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			require_once WD_ABSPATH . 'includes/wd-settings-page.php';
 		}
 	}WD_loader::get_instance();
+
+
 endif;
