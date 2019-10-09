@@ -68,9 +68,20 @@ if ( ! class_exists( 'WD_loader' ) ) :
 		 * 
 		 * @since 1.0.0
 		 */
-		public function wd_plugin_scripts() {
-			$wd_post = get_option('wd_settings_data');
+		public function wd_plugin_scripts() {	
 			$wd_role = $this->wd_get_current_user_role();
+			if(is_multisite()){
+				//used when we are dealing with multisite setup.
+				$site_id = get_current_blog_id();	
+				$wd_post = get_blog_option( 1, 'wd_settings_data');
+				if( isset( $wd_post["wd_hide_settings"] ) ){
+					$wd_post = get_blog_option( 1, 'wd_settings_data');
+				}else{
+					$wd_post = get_blog_option( $site_id, 'wd_settings_data');
+				}
+			}else{
+					$wd_post = get_option('wd_settings_data');
+			}
 			
 			wp_register_style( 'wd_css', WD_PLUGIN_URL . '/assets/css/wd-css.css', null, SCRIPTS_VERSION, false );
 			wp_register_script('wd_js', WD_PLUGIN_URL. '/assets/js/wd-js.js', null , SCRIPTS_VERSION, false);
@@ -79,7 +90,7 @@ if ( ! class_exists( 'WD_loader' ) ) :
 					'template',
 					array(
 						'user_role' => $wd_role , 
-						'wd_settings' => get_option('wd_settings_data') ,
+						'wd_settings' => $wd_post ,
 						)
 			);
 		}
@@ -205,9 +216,11 @@ if ( ! class_exists( 'WD_loader' ) ) :
 		 * @since 1.0.0
 		 */
 		public function wd_render_template()
-		{
+		{				
 			//check if multisite then fetch option valies respective to that particular site else directlu use get option.
 			if(is_multisite()){
+				//used when we are dealing with multisite setup.
+				$site_id = get_current_blog_id();	
 				$wd_post = get_blog_option( 1, 'wd_settings_data');
 				if( isset( $wd_post["wd_hide_settings"] ) ){
 					$wd_post = get_blog_option( 1, 'wd_settings_data');
@@ -218,10 +231,7 @@ if ( ! class_exists( 'WD_loader' ) ) :
 				$wd_post = get_option('wd_settings_data');
 			}
 
-			if(is_multisite()){
-				//used when we are dealing with multisite setup.
-				$site_id = get_current_blog_id();	
-			}			
+					
 			
 			$wd_role = $this->wd_get_current_user_role();
 			for ($i=0; $i<2; $i++) {
@@ -273,7 +283,17 @@ if ( ! class_exists( 'WD_loader' ) ) :
 		 */
 		public function wd_remove_all_dashboard_meta_boxes()
 		{
-			$wd_post = get_option('wd_settings_data');
+			if(is_multisite()){
+				$site_id = get_current_blog_id();
+				$wd_post = get_blog_option( 1, 'wd_settings_data');
+				if( isset( $wd_post["wd_hide_settings"] ) ){
+					$wd_post = get_blog_option( 1, 'wd_settings_data');
+				}else{
+					$wd_post = get_blog_option( $site_id, 'wd_settings_data');
+				}
+			}else{
+				$wd_post = get_option('wd_settings_data');
+			}
 			$wd_role = $this->wd_get_current_user_role();
 			if( isset($wd_post[$wd_role]["clear-dasboard"])  ){
 				
