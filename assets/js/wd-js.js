@@ -1,5 +1,6 @@
 jQuery(document).ready(
     function() {
+    	console.log('damn everywhere');
     	var wd_settings = template.wd_settings ;
     	var wd_role = template.user_role;
 		if(wd_settings[wd_role]['dissmissable'] == 1){

@@ -61,8 +61,16 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			add_action('wp_dashboard_setup', array($this , 'wd_remove_all_dashboard_meta_boxes'), 9999 );
 			add_action( 'elementor/init', array( $this, 'wd_saved_template' ) );
 			add_action('elementor/template-library/create_new_dialog_fields', array($this,'wd_custom_feilds') );
+			// add_action( 'init', array( $this, 'wd_get_current_screen' ) );
 		}
 
+
+		// public function wd_get_current_screen(){
+		// 	$wd_screen = get_current_screen();
+		// 	var_dump($wd_screen);
+		// 	wp_die()
+		// 	return $wd_screen;
+		// }
 		/**
 		 * Register and localize the scripts.
 		 * 
@@ -241,6 +249,7 @@ if ( ! class_exists( 'WD_loader' ) ) :
 				$elementor->frontend->register_scripts();
 				$elementor->frontend->enqueue_scripts();
 			}
+
 			if(is_multisite()){
 				// in case we hide the settings from other sub sites then we need to do changes in this block of if.
 				if( isset( $wd_post["wd_hide_settings"] ) && $wd_post["wd_hide_settings"] == 'yes' ){
@@ -252,25 +261,6 @@ if ( ! class_exists( 'WD_loader' ) ) :
 				}
 			}else{
 				echo $elementor->frontend->get_builder_content_for_display( $wd_post[$wd_role]["template-id"] , true );
-			}
-				
-
-		}
-
-		/**
-		 * Function which includes the welcome panel html
-		 *
-		 * 
-		 *
-		 * @since 1.0.0
-		 */
-		public function wd_welcome_panel(){
-			$ppc_screen = get_current_screen();
-			if('index' == $ppc_screen->parent_base ){
-				require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
-			}
-			else{
-				return;
 			}
 		}
 
@@ -315,19 +305,39 @@ if ( ! class_exists( 'WD_loader' ) ) :
 			global $current_screen;
 			$wd_post = get_option('wd_settings_data');
 			$wd_role = $this->wd_get_current_user_role();
-			$ppc_screen = $current_screen;
+			// $wd_screen = $this -> wd_get_current_screen();
+			// var_dump($wd_screen);
+			// wp_die();
+			// $ppc_screen = $current_screen;
 			if( $wd_post[$wd_role]["template-id"] != "---select---"){
 				if ( ! current_user_can( 'edit_theme_options' ) ) {
-				  add_action( 'admin_notices', array( $this, 'wd_display_panel' ) );
+				  add_action( 'admin_notices', array( $this, 'wd_welcome_panel' ) );
 				}
 				remove_action( 'welcome_panel', 'wp_welcome_panel' );
-				add_action( 'welcome_panel', array( $this, 'wd_display_panel' ) );
-				if('index' == $ppc_screen->parent_base ){
-					require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
-				}
-				else{
-					return;
-				}
+				add_action( 'welcome_panel', array( $this, 'wd_welcome_panel' ) );
+				// if('index' == $ppc_screen->parent_base ){
+				// 	require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
+				// }
+				// else{
+				// 	return;
+				// }
+			}
+		}
+
+		/**
+		 * Function which includes the welcome panel html
+		 *
+		 * 
+		 *
+		 * @since 1.0.0
+		 */
+		public function wd_welcome_panel(){
+			$ppc_screen = get_current_screen();
+			if('my-sites' !== $ppc_screen->base ){
+				require_once WD_ABSPATH . 'includes/wd-welcome-panel.php';
+			}
+			else{
+				return;
 			}
 		}
 		/**

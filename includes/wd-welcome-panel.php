@@ -11,7 +11,7 @@
 
 <?php if ( ! current_user_can( 'edit_theme_options' ) ) { ?>
 <script type="text/javascript">
-    ;(function($) {
+    (function($) {
         $(document).ready(function() {
             $('<div id="welcome-panel" class="welcome-panel welcome-panel-content notice is-dismissible"></div>').insertBefore('#dashboard-widgets-wrap').append($('.wd-panel-content'));
         });
