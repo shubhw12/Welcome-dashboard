@@ -1,9 +1,22 @@
-
 <?php
-	wp_enqueue_style( 'wd_css' );
-	wp_enqueue_script('wd_js');	
-?>
+/**
+ * Welcome Dashboard page setups
+ *
+ * PHP version 7
+ *
+ * @category PHP
+ * @package  Welcome Dashboard
+ * @author   Display Name <username@BrainstormForce.com>
+ * @license  http://brainstormforce.com
+ * @link     http://brainstormforce.com
+ *
+ * @since  1.0.0
+ * @return void
+ */
 
+	wp_enqueue_style( 'wd_css' );
+	wp_enqueue_script( 'wd_js' );
+?>
 
 <div class="welcome-panel-content wd-panel-content">
 	<?php $this->wd_render_template(); ?>
@@ -11,14 +24,10 @@
 
 <?php if ( ! current_user_can( 'edit_theme_options' ) ) { ?>
 <script type="text/javascript">
-    (function($) {
-        $(document).ready(function() {
-            $('<div id="welcome-panel" class="welcome-panel welcome-panel-content notice is-dismissible"></div>').insertBefore('#dashboard-widgets-wrap').append($('.wd-panel-content'));
-        });
-    })(jQuery);
+	(function($) {
+		$(document).ready(function() {
+			$('<div id="welcome-panel" class="welcome-panel welcome-panel-content notice is-dismissible"></div>').insertBefore('#dashboard-widgets-wrap').append($('.wd-panel-content'));
+		});
+	})(jQuery);
 </script>
 <?php } ?>
-
-
-
-
